@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  ussd:
+    image: parking:ussd
+    ports:
+      - '8000:8000'
+    environment:
+      - PORT=''

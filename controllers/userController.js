@@ -53,8 +53,11 @@ const getAllUsers = async () => {
 
 const getUser = async (phoneNumber) => {
     try {
+        console.log("phoneNumber: ", phoneNumber)
         let phonenumber = validatePhoneNumber(phoneNumber);
+        console.log("Validate phoneNumber: ", phoneNumber)
         const user = await User.findOne({ phoneNumber: phonenumber });
+        console.log("user: ", user)
         if (!user) {
             return {
                 status: false,

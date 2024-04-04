@@ -1,4 +1,5 @@
 const Parking = require('../model/parkingModel');
+const mongoose = require('mongoose');
 
 
 
@@ -31,7 +32,7 @@ const park = async (plateNo) =>{
 
 const getParking = async (plateNo) => {
     try {
-        const parking = await Parking.findone({plateNumber:plateNo})
+        const parking = await Parking.findOne({plateNumber:plateNo})
         if (!parking) {
             return {
                 status: false,

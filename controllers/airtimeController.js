@@ -11,7 +11,7 @@ const AfricasTalking = require('africastalking')(credentials);
 const AT_Airtime = AfricasTalking.AIRTIME;
 const app = AfricasTalking.APPLICATION;
 
-const airTime = async (phonenumber, _amount) => {
+const airTime = async (phonenumber, Amount) => {
     try {
         let phoneNo = validatePhoneNumber(phonenumber)
         const options = {
@@ -20,7 +20,7 @@ const airTime = async (phonenumber, _amount) => {
                 {
                     phoneNumber: phoneNo,
                     currencyCode: 'KES',
-                    amount: _amount,
+                    amount: Amount,
                 },
             ],
         };

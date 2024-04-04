@@ -69,6 +69,11 @@ menu.state('mpesa', {
     },
 });
 
+menu.state('points', {
+    run: async () => {
+        
+    }
+})
 
 
 menu.state('utilitybills', {

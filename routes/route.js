@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     res.json(await getAllUsers());
 });
 
-router.post('/user', async (req, res) => {
+router.get('/user', async (req, res) => {
     res.json(await getUser(req.body.phoneNumber));
 });
 

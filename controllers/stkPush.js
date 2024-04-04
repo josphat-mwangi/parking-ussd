@@ -10,6 +10,7 @@ const accessToken = (req, res) => {
 };
 
 const sendSTKPush = ({ phoneNumber, Amount }) => {
+    console.log("body: ", phoneNumber, Amount)
     return new Promise(async (resolve, reject) => {
         let url = process.env.endpoint_stk_push;
         let getAccessToken = await get_access_token();

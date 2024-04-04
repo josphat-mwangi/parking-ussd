@@ -1,5 +1,11 @@
 const router = require('express').Router();
 const UssdMenu = require('ussd-builder');
+const { sendSTKPush } = require('../controllers/stkPush');
+const { getUser } = require('../controllers/userController')
+const { convertPointsOrAmount } = require('../utils/points');
+const User = require('../model/userModel');
+const { createUser } = require('../controllers/userController');
+
 
 const {
     initilize,
@@ -7,13 +13,23 @@ const {
     deleteData,
     updateData,
 } = require('../utils/picoDB');
+const { getParking } = require('../controllers/parkingController');
+const { parkingFee } = require('../utils/parkingPrice');
+const { SendSMS } = require('../utils/sms');
 
 let menu = new UssdMenu();
 let dataAmount = {};
 
 menu.startState({
     run: async () => {
-        
+        let data = await findData(menu.args.sessionId);
+        let user = await User.findOne({
+            phoneNumber: data[0].phoneNumber,
+        });
+
+        if (!user) {
+            await createUser(data[0].phoneNumber);
+        }
         menu.con(
             'Welcome to Parking Solutions: ' +
                 '\n1. Pay Parking' +
@@ -41,16 +57,28 @@ menu.state('payparking', {
 
 
 menu.state('payparking.pay', {
-    run: () => {
-        //query db for amount to pay
-        let amount = 20;
-        menu.con(
-            `Confirm Purchase of Airtime Ksh ${amount} \n Pay with: \n1. Mpesa \n2. Taka Points`
-        );
+    run: async () => {
+        let parking = await getParking(menu.val)
+        let data = await findData(menu.args.sessionId);
+        let number = data[0].phoneNumber;
+        console.log("parking: ", parking)
+        // Check if parking is not yet paid
+        if (parking.status && parking.message.isPayment === false) {
+            let amount = await parkingFee(parking.message.createdAt);
+            menu.con(
+                `The parking fee for ${menu.val} is ${amount}. Pay with: \n1. Mpesa`
+            );
+            SendSMS({
+                to: number,
+                msg: `The parking fee for ${menu.val} is ${amount}. You can also pay via paybill 110010 and account number is ${menu.val}. Thank you for choosing us.`
+            });
+        } else {
+            await deleteData(menu.args.sessionId);
+            menu.end('The car parking is already paid');
+        }
     },
     next: {
         1: 'mpesa',
-        2: 'points',
     },
 });
 
@@ -60,20 +88,16 @@ menu.state('mpesa', {
     run: async () => {
         let data = await findData(menu.args.sessionId);
         let number = data[0].phoneNumber;
-        let Amount = dataAmount.amount;
+        let Amount = 10;
         await sendSTKPush({ phoneNumber: number.split('+')[1], Amount });
         await deleteData(menu.args.sessionId);
         menu.end(
-            'Your Airtime Request has been Received.\n Kindly Enter Mpesa Pin when Prompted to complete the transaction.'
+            'STK push will be sent to complete payment. Thank you'
         );
     },
 });
 
-menu.state('points', {
-    run: async () => {
-        
-    }
-})
+
 
 
 menu.state('utilitybills', {
@@ -86,18 +110,20 @@ menu.state('utilitybills', {
 menu.state('parkingpoints', {
     run: async () => {
         let doc = await findData(menu.args.sessionId);
-        let resBalance = await getWallet(doc[0].phoneNumber);
-        resBalance.data.map(async (data) => {
+        let balance = await getUser(doc[0].phoneNumber);
+
+        if (balance.status) { // Check if status is true
             let amount = await convertPointsOrAmount(
-                data.points,
+                balance.data.points,
                 'points',
                 'amount'
             );
             await deleteData(menu.args.sessionId);
             menu.end(
-                `Your Parking points balance is ${data.points} Parking points worth Kshs ${amount}. Parking is for you `
+                `Your Parking points balance is ${balance.data.points} Parking points worth Kshs ${amount}. Parking is for you `
             );
-        });
+        } 
+        
     },
 });
 

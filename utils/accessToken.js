@@ -21,6 +21,7 @@ const get_access_token = () => {
                 if (err) {
                     reject(err);
                 } else {
+                    console.log("access token: ", JSON.parse(body).access_token)
                     const access_token = JSON.parse(body).access_token;
                     resolve(access_token);
                 }

@@ -11,16 +11,19 @@ const sms = AfricasTalking.SMS;
 
 
 
-const SendSMS = async (to, msg) => {
+const SendSMS = async ({ to, msg}) => {
+ 
     const options = {
         to: [to],
         message: msg,
     };
     sms.send(options)
         .then((response) => {
+            console.log("response: ", response)
             return response;
         })
         .catch((error) => {
+            console.log("error: ", error)
             return {
                 status: 404,
                 message: error,

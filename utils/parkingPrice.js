@@ -11,7 +11,7 @@ const parkingFee = (startTime) => {
     
 
     // return the result rounded to two decimal places
-    return Math.round(result * 10) / 10;
+    return Math.round(result);
 }
 
 module.exports = { parkingFee };

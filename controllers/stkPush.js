@@ -73,7 +73,7 @@ const callBackURL = async (req, res) => {
 
         const mappedResult = mapMetadata(metadata);
         const { Amount, TransactionDate, MpesaReceiptNumber, PhoneNumber } =
-            mappedResult;
+            mappedResult
 
         const newPayment = new Payment({
             amount: Amount,

@@ -1,2 +1,5 @@
 .env
 node_modules/
+.github/
+docker-compose.yml
+dockerfile

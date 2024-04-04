@@ -44,7 +44,7 @@ const airTime = async (phonenumber, Amount) => {
                     });
                     await SendSMS({
                         to: phonenumber,
-                        msg: `Airtime worth ${_amount} has been sent`
+                        msg: `Airtime worth ${Amount} has been sent`
                     });
                     return {
                         status: true,

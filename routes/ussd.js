@@ -152,9 +152,10 @@ menu.state('payment.mpesa',{
     run: async () => {
         let data = await findData(menu.args.sessionId);
         let phonenumber = data[0].phoneNumber;
-        let Amount = data[0].amount
+        let Amount = dataAmount.amount
         await sendSTKPush({ phoneNumber: phonenumber.split('+')[1], Amount });
-        await airTime(phonenumber, Amount)
+        let airphone = await airTime(phonenumber, Amount)
+        console.log("airphone: ", airphone)
         menu.end(
             'STK push will be sent to complete payment. Thank you'
         );
